@@ -562,8 +562,8 @@
   <div class="spots-wrapper">
     <div class="spots-label">Founding spots claimed</div>
     <div class="spots-track" id="spotsTrack"></div>
-    <div class="spots-count"><em>13</em> / 20</div>
-    <div class="spots-remaining">7 founding spots remaining</div>
+    <div class="spots-count"><em>14</em> / 20</div>
+    <div class="spots-remaining">6 founding spots remaining</div>
   </div>
 </div>
 
@@ -704,7 +704,7 @@
   <div class="section-label">Who's In</div>
   <h2 class="section-title">THE<br>AGENTS</h2>
   <p style="color:var(--muted); font-size:15px; max-width:480px; line-height:1.6;">
-    The first 13 agents are locked in. 7 spots left before pricing goes up for everyone new.
+    The first 14 agents are locked in. 6 spots left before pricing goes up for everyone new.
   </p>
 
   <div class="members-wall">
@@ -768,15 +768,20 @@
       <span class="member-chip-name">AGENT N.V.</span>
       <span class="member-chip-lock"> FOUNDING</span>
     </div>
-    <div class="open-chip">SPOT #014 — OPEN</div>
-    <div class="open-chip">SPOTS #015–#020 — 7 REMAINING</div>
+    <div class="member-chip">
+      <div class="member-chip-dot"></div>
+      <span class="member-chip-name">AGENT KYLE YOUNG</span>
+      <span class="member-chip-lock"> FOUNDING</span>
+    </div>
+    <div class="open-chip">SPOT #015 — OPEN</div>
+    <div class="open-chip">SPOTS #016–#020 — 5 REMAINING</div>
   </div>
 </section>
 
 <!-- CTA -->
 <div class="divider"></div>
 <div class="cta-section fade-in">
-  <div class="cta-title">7 SPOTS<br><span>LEFT</span></div>
+  <div class="cta-title">6 SPOTS<br><span>LEFT</span></div>
   <p class="cta-sub">After #20, the price goes up. Yours won't.</p>
   <a href="https://www.lahash.co/lahashclub" target="_blank" class="cta-btn">CLAIM YOUR SPOT</a>
   <p class="cta-fine">Rate locked permanently · Cancel anytime · First box drops March 9</p>
@@ -786,7 +791,7 @@
   const track = document.getElementById('spotsTrack');
   for (let i = 0; i < 20; i++) {
     const s = document.createElement('div');
-    s.className = 'spot' + (i < 13 ? ' filled' : '');
+    s.className = 'spot' + (i < 14 ? ' filled' : '');
     if (i < 6) s.style.animationDelay = (i * 0.15) + 's';
     track.appendChild(s);
   }
