@@ -562,8 +562,8 @@
   <div class="spots-wrapper">
     <div class="spots-label">Founding spots claimed</div>
     <div class="spots-track" id="spotsTrack"></div>
-    <div class="spots-count"><em>18</em> / 20</div>
-    <div class="spots-remaining">2 founding spots remaining</div>
+    <div class="spots-count"><em>20</em> / 20</div>
+    <div class="spots-remaining" style="background:rgba(201,168,76,0.15); color:var(--gold); border-color:rgba(201,168,76,0.5);"> FOUNDING CLASS CLOSED</div>
   </div>
 </div>
 
@@ -704,7 +704,7 @@
   <div class="section-label">Who's In</div>
   <h2 class="section-title">THE<br>AGENTS</h2>
   <p style="color:var(--muted); font-size:15px; max-width:480px; line-height:1.6;">
-    The first 18 agents are locked in. 2 spots left before pricing goes up for everyone new.
+    All 20 founding agents are locked in. The founding class is closed.
   </p>
 
   <div class="members-wall">
@@ -793,17 +793,25 @@
       <span class="member-chip-name">AGENT R.S.</span>
       <span class="member-chip-lock"> FOUNDING</span>
     </div>
-    <div class="open-chip">SPOT #019 — OPEN</div>
-    <div class="open-chip">SPOT #020 — OPEN</div>
+    <div class="member-chip">
+      <div class="member-chip-dot"></div>
+      <span class="member-chip-name">AGENT L.T.</span>
+      <span class="member-chip-lock"> FOUNDING</span>
+    </div>
+    <div class="member-chip">
+      <div class="member-chip-dot"></div>
+      <span class="member-chip-name">AGENT G.G.</span>
+      <span class="member-chip-lock"> FOUNDING</span>
+    </div>
   </div>
 </section>
 
 <!-- CTA -->
 <div class="divider"></div>
 <div class="cta-section fade-in">
-  <div class="cta-title">2 SPOTS<br><span>LEFT</span></div>
-  <p class="cta-sub">After #20, the price goes up. Yours won't.</p>
-  <a href="https://www.lahash.co/lahashclub" target="_blank" class="cta-btn">CLAIM YOUR SPOT</a>
+  <div class="cta-title">FOUNDING<br><span>CLOSED</span></div>
+  <p class="cta-sub">All 20 spots are locked in. First box ships March 9.</p>
+  <a href="https://www.lahash.co/lahashclub" target="_blank" class="cta-btn">JOIN AT STANDARD RATE</a>
   <p class="cta-fine">Rate locked permanently · Cancel anytime · First box drops March 9</p>
 </div>
 
@@ -811,7 +819,7 @@
   const track = document.getElementById('spotsTrack');
   for (let i = 0; i < 20; i++) {
     const s = document.createElement('div');
-    s.className = 'spot' + (i < 18 ? ' filled' : '');
+    s.className = 'spot' + (i < 20 ? ' filled' : '');
     if (i < 6) s.style.animationDelay = (i * 0.15) + 's';
     track.appendChild(s);
   }
