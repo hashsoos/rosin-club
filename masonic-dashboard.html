@@ -1,0 +1,709 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MasonicSmoker — Affiliate Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a08;
+    --deep: #111109;
+    --green: #2d5a1b;
+    --green-bright: #4a9e2a;
+    --green-glow: #6fcf3d;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f0ead6;
+    --muted: #7a7a6a;
+    --border: rgba(201,168,76,0.2);
+    --red: #c62828;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* ── HEADER ── */
+  .topbar {
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    padding: 18px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .topbar-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+  }
+
+  .topbar-x { color: var(--muted); font-size: 14px; font-family: 'DM Mono', monospace; }
+
+  .topbar-brand {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    color: var(--green-glow);
+  }
+
+  .topbar-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-card {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--cream);
+  }
+
+  .stat-value.green { color: var(--green-glow); }
+  .stat-value.gold  { color: var(--gold-light); }
+
+  .stat-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── SECTION HEADER ── */
+  .section-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    margin-top: 40px;
+  }
+
+  .section-hdr-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--cream);
+  }
+
+  .section-hdr-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--green-bright);
+    text-transform: uppercase;
+  }
+
+  /* ── SUBSCRIBER TABLE ── */
+  .table-wrap {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    overflow: hidden;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  thead th {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    padding: 14px 20px;
+    text-align: left;
+    border-bottom: 1px solid rgba(255,255,255,0.06);
+    background: var(--black);
+  }
+
+  tbody tr {
+    border-bottom: 1px solid rgba(255,255,255,0.04);
+    transition: background 0.15s;
+  }
+
+  tbody tr:hover { background: rgba(255,255,255,0.02); }
+  tbody tr:last-child { border-bottom: none; }
+
+  tbody td {
+    padding: 16px 20px;
+    font-size: 14px;
+    color: var(--cream);
+    vertical-align: middle;
+  }
+
+  .sub-name { font-weight: 600; }
+
+  .tier-badge {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    border-radius: 2px;
+  }
+
+  .tier-badge.entry    { background: rgba(74,158,42,0.15);  color: var(--green-bright); border: 1px solid rgba(74,158,42,0.3); }
+  .tier-badge.mid      { background: rgba(201,168,76,0.1);  color: var(--gold);         border: 1px solid rgba(201,168,76,0.25); }
+  .tier-badge.collector{ background: rgba(111,207,61,0.12); color: var(--green-glow);   border: 1px solid rgba(111,207,61,0.3); }
+
+  .status-active {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--green-glow);
+    letter-spacing: 0.05em;
+  }
+
+  .status-active::before {
+    content: '';
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--green-glow);
+    box-shadow: 0 0 6px rgba(111,207,61,0.6);
+    flex-shrink: 0;
+  }
+
+  .commission-amt {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--green-glow);
+    font-weight: 500;
+  }
+
+  .months-badge {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+  }
+
+  /* empty state */
+  .empty-row td {
+    text-align: center;
+    padding: 48px;
+    color: var(--muted);
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── PAYMENT HISTORY ── */
+  .payments-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  @media (max-width: 600px) { .payments-grid { grid-template-columns: 1fr; } }
+
+  .payment-card {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 24px;
+  }
+
+  .payment-month {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .payment-amount {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    line-height: 1;
+    margin-bottom: 10px;
+  }
+
+  .payment-amount.paid   { color: var(--green-glow); }
+  .payment-amount.pending{ color: var(--gold-light); }
+  .payment-amount.unpaid { color: var(--muted); }
+
+  .payment-status {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 3px 10px;
+    display: inline-block;
+  }
+
+  .payment-status.paid    { background: rgba(111,207,61,0.1);  color: var(--green-glow); border: 1px solid rgba(111,207,61,0.25); }
+  .payment-status.pending { background: rgba(201,168,76,0.1);  color: var(--gold);       border: 1px solid rgba(201,168,76,0.25); }
+  .payment-status.upcoming{ background: rgba(255,255,255,0.04); color: var(--muted);     border: 1px solid rgba(255,255,255,0.1); }
+
+  .payment-subs {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── CODE BOX ── */
+  .code-box {
+    background: var(--deep);
+    border: 1px solid var(--border);
+    padding: 28px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 20px;
+  }
+
+  .code-left { }
+
+  .code-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  .code-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--gold-light);
+    letter-spacing: 0.1em;
+  }
+
+  .code-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.05em;
+  }
+
+  .copy-btn {
+    background: transparent;
+    border: 1px solid rgba(201,168,76,0.3);
+    color: var(--gold);
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    padding: 10px 24px;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+  }
+
+  .copy-btn:hover {
+    background: rgba(201,168,76,0.1);
+    border-color: var(--gold);
+  }
+
+  .copy-btn.copied {
+    color: var(--green-glow);
+    border-color: var(--green-glow);
+  }
+
+  /* ── ADD SUB FORM ── */
+  .add-form {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 28px 32px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr auto;
+    gap: 12px;
+    align-items: end;
+  }
+
+  @media (max-width: 700px) { .add-form { grid-template-columns: 1fr 1fr; } }
+
+  .form-field label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+  }
+
+  .form-field input,
+  .form-field select {
+    width: 100%;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    padding: 10px 14px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+
+  .form-field input:focus,
+  .form-field select:focus { border-color: rgba(111,207,61,0.4); }
+
+  .form-field select option { background: var(--deep); }
+
+  .add-btn {
+    background: var(--green-glow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 0.1em;
+    padding: 11px 24px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+  }
+
+  .add-btn:hover { background: var(--gold-light); }
+
+  /* ── MARK PAID ── */
+  .mark-paid-btn {
+    background: transparent;
+    border: 1px solid rgba(111,207,61,0.25);
+    color: var(--green-glow);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 5px 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .mark-paid-btn:hover { background: rgba(111,207,61,0.1); }
+  .mark-paid-btn.paid  { color: var(--muted); border-color: rgba(255,255,255,0.1); cursor: default; }
+
+  .remove-btn {
+    background: transparent;
+    border: none;
+    color: var(--muted);
+    font-size: 16px;
+    cursor: pointer;
+    padding: 4px 8px;
+    transition: color 0.2s;
+  }
+  .remove-btn:hover { color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-left">
+    <span class="topbar-name">MASONICSMOKER</span>
+    <span class="topbar-x">×</span>
+    <span class="topbar-brand">LA HASH CO</span>
+  </div>
+  <div class="topbar-date" id="currentDate"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Active Subscribers</div>
+      <div class="stat-value green" id="statActive">0</div>
+      <div class="stat-sub">referred by you</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">This Month</div>
+      <div class="stat-value gold" id="statMonth">$0</div>
+      <div class="stat-sub">commission owed</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Total Earned</div>
+      <div class="stat-value" id="statTotal">$0</div>
+      <div class="stat-sub">all time</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Next Payout</div>
+      <div class="stat-value green" id="statNext">Apr 1</div>
+      <div class="stat-sub">paid in cash</div>
+    </div>
+  </div>
+
+  <!-- AFFILIATE CODE -->
+  <div class="section-hdr">
+    <div class="section-hdr-title">Your Code & Link</div>
+    <div class="section-hdr-label">Share Everywhere</div>
+  </div>
+  <div class="code-box">
+    <div class="code-left">
+      <div class="code-label">Affiliate Code</div>
+      <div class="code-value">MASONICSMOKER</div>
+      <div class="code-url">lahash.co/lahashclub?ref=masonicsmoker · 10% off first month for your followers</div>
+    </div>
+    <button class="copy-btn" id="copyBtn" onclick="copyLink()">Copy Link</button>
+  </div>
+
+  <!-- ADD SUBSCRIBER -->
+  <div class="section-hdr" style="margin-top:40px;">
+    <div class="section-hdr-title">Add Subscriber</div>
+    <div class="section-hdr-label">When someone uses your code</div>
+  </div>
+  <div class="add-form">
+    <div class="form-field">
+      <label>Subscriber Name</label>
+      <input type="text" id="newName" placeholder="Full name" />
+    </div>
+    <div class="form-field">
+      <label>Tier</label>
+      <select id="newTier">
+        <option value="139">Entry — $139/mo</option>
+        <option value="249">Mid — $249/mo</option>
+        <option value="399">Collector — $399/mo</option>
+      </select>
+    </div>
+    <div class="form-field">
+      <label>Start Date</label>
+      <input type="date" id="newDate" />
+    </div>
+    <button class="add-btn" onclick="addSubscriber()">+ ADD</button>
+  </div>
+
+  <!-- SUBSCRIBER TABLE -->
+  <div class="section-hdr">
+    <div class="section-hdr-title">Active Subscribers</div>
+    <div class="section-hdr-label" id="subCount">0 subscribers</div>
+  </div>
+  <div class="table-wrap">
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Tier</th>
+          <th>Start Date</th>
+          <th>Months Active</th>
+          <th>Monthly Commission</th>
+          <th>Status</th>
+          <th>This Month Paid</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody id="subTable">
+        <tr class="empty-row">
+          <td colspan="8">No subscribers yet — add your first one above</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- PAYMENT HISTORY -->
+  <div class="section-hdr">
+    <div class="section-hdr-title">Payment History</div>
+    <div class="section-hdr-label">Paid on 1st of each month</div>
+  </div>
+  <div class="payments-grid" id="paymentHistory">
+    <!-- filled by JS -->
+  </div>
+
+</div>
+
+<script>
+  const COMMISSION = 0.10;
+  const TIER_NAMES = { 139: 'Entry', 249: 'Mid', 399: 'Collector' };
+
+  // Set date
+  document.getElementById('currentDate').textContent =
+    new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
+
+  // Set default date to today
+  document.getElementById('newDate').value = new Date().toISOString().split('T')[0];
+
+  // Load from localStorage
+  let subscribers = JSON.parse(localStorage.getItem('masonic_subs') || '[]');
+  let payments    = JSON.parse(localStorage.getItem('masonic_payments') || '[]');
+
+  function save() {
+    localStorage.setItem('masonic_subs', JSON.stringify(subscribers));
+    localStorage.setItem('masonic_payments', JSON.stringify(payments));
+  }
+
+  function monthsActive(startDate) {
+    const start = new Date(startDate);
+    const now   = new Date();
+    return Math.max(0, (now.getFullYear() - start.getFullYear()) * 12 + (now.getMonth() - start.getMonth()));
+  }
+
+  function commission(price, months) {
+    return months >= 1 ? price * COMMISSION : 0;
+  }
+
+  function render() {
+    const tbody = document.getElementById('subTable');
+    const active = subscribers.filter(s => s.active);
+
+    // Stats
+    const totalMonthly = active.reduce((s, sub) => s + commission(sub.price, monthsActive(sub.startDate)), 0);
+    const totalEarned  = payments.filter(p => p.status === 'paid').reduce((s, p) => s + p.amount, 0);
+    document.getElementById('statActive').textContent  = active.length;
+    document.getElementById('statMonth').textContent   = '$' + totalMonthly.toFixed(2);
+    document.getElementById('statTotal').textContent   = '$' + totalEarned.toFixed(2);
+    document.getElementById('subCount').textContent    = active.length + ' subscriber' + (active.length !== 1 ? 's' : '');
+
+    // Table
+    if (active.length === 0) {
+      tbody.innerHTML = `<tr class="empty-row"><td colspan="8">No subscribers yet — add your first one above</td></tr>`;
+    } else {
+      tbody.innerHTML = active.map((sub, i) => {
+        const months = monthsActive(sub.startDate);
+        const comm   = commission(sub.price, months);
+        const tierKey = sub.price <= 139 ? 'entry' : sub.price <= 249 ? 'mid' : 'collector';
+        return `
+          <tr>
+            <td class="sub-name">${sub.name}</td>
+            <td><span class="tier-badge ${tierKey}">${TIER_NAMES[sub.price] || sub.price}</span></td>
+            <td style="font-family:'DM Mono',monospace; font-size:12px; color:var(--muted);">${sub.startDate}</td>
+            <td class="months-badge">${months} mo${months !== 1 ? 's' : ''}</td>
+            <td class="commission-amt">${comm > 0 ? '$' + comm.toFixed(2) : '<span style="color:var(--muted)">Hold</span>'}</td>
+            <td><span class="status-active">Active</span></td>
+            <td>
+              <button class="mark-paid-btn ${sub.paidThisMonth ? 'paid' : ''}"
+                onclick="togglePaid(${i})">${sub.paidThisMonth ? '✓ Paid' : 'Mark Paid'}</button>
+            </td>
+            <td><button class="remove-btn" onclick="removeSub(${i})" title="Remove">×</button></td>
+          </tr>`;
+      }).join('');
+    }
+
+    // Payment history
+    renderPayments(totalMonthly);
+  }
+
+  function renderPayments(currentMonthly) {
+    const container = document.getElementById('paymentHistory');
+    const months = ['March 2026','April 2026','May 2026','June 2026','July 2026','August 2026'];
+    container.innerHTML = months.map((month, i) => {
+      const existing = payments.find(p => p.month === month);
+      const isCurrent = month === 'March 2026';
+      const status = existing ? existing.status : (isCurrent ? 'pending' : 'upcoming');
+      const amount = existing ? existing.amount : (isCurrent ? currentMonthly : 0);
+      const statusLabel = status === 'paid' ? 'PAID' : status === 'pending' ? 'PENDING' : 'UPCOMING';
+      const amountStr = amount > 0 ? '$' + amount.toFixed(2) : '—';
+      return `
+        <div class="payment-card">
+          <div class="payment-month">${month}</div>
+          <div class="payment-amount ${status}">${amountStr}</div>
+          <span class="payment-status ${status === 'upcoming' ? 'upcoming' : status}">${statusLabel}</span>
+          <div class="payment-subs">${subscribers.filter(s=>s.active).length} active sub${subscribers.filter(s=>s.active).length !== 1 ? 's' : ''}</div>
+          ${status === 'pending' ? `<br><button class="mark-paid-btn" onclick="markMonthPaid('${month}', ${amount})" style="margin-top:8px;">Mark Paid</button>` : ''}
+        </div>`;
+    }).join('');
+  }
+
+  function addSubscriber() {
+    const name  = document.getElementById('newName').value.trim();
+    const price = parseInt(document.getElementById('newTier').value);
+    const date  = document.getElementById('newDate').value;
+    if (!name) { alert('Enter a name'); return; }
+    subscribers.push({ name, price, startDate: date, active: true, paidThisMonth: false });
+    save();
+    render();
+    document.getElementById('newName').value = '';
+    document.getElementById('newDate').value = new Date().toISOString().split('T')[0];
+  }
+
+  function removeSub(i) {
+    const active = subscribers.filter(s => s.active);
+    const sub = active[i];
+    if (confirm(`Remove ${sub.name}?`)) {
+      sub.active = false;
+      save();
+      render();
+    }
+  }
+
+  function togglePaid(i) {
+    const active = subscribers.filter(s => s.active);
+    active[i].paidThisMonth = !active[i].paidThisMonth;
+    save();
+    render();
+  }
+
+  function markMonthPaid(month, amount) {
+    const existing = payments.findIndex(p => p.month === month);
+    if (existing >= 0) payments[existing].status = 'paid';
+    else payments.push({ month, amount, status: 'paid' });
+    // Reset monthly paid flags
+    subscribers.forEach(s => s.paidThisMonth = false);
+    save();
+    render();
+  }
+
+  function copyLink() {
+    navigator.clipboard.writeText('https://www.lahash.co/lahashclub?ref=masonicsmoker');
+    const btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+  }
+
+  render();
+</script>
+</body>
+</html>
