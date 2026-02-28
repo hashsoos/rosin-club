@@ -38,6 +38,87 @@
     opacity: 0.4;
   }
 
+  /* ── PASSWORD GATE ── */
+  .gate {
+    position: fixed; inset: 0;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .gate-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 0.9;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .gate-title span { color: var(--green-glow); }
+
+  .gate-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.15em;
+    color: var(--muted);
+    margin-bottom: 36px;
+    text-transform: uppercase;
+  }
+
+  .gate-input {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    padding: 14px 24px;
+    outline: none;
+    text-align: center;
+    width: 280px;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .gate-input:focus { border-color: rgba(111,207,61,0.4); }
+  .gate-input.error { border-color: var(--red); animation: shake 0.3s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .gate-btn {
+    background: var(--green-glow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    padding: 14px 48px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 280px;
+  }
+
+  .gate-btn:hover { background: var(--gold-light); }
+
+  .gate-error {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--red);
+    letter-spacing: 0.1em;
+    margin-top: 10px;
+    height: 16px;
+  }
+
   /* ── HEADER ── */
   .topbar {
     background: var(--deep);
@@ -450,6 +531,15 @@
 </head>
 <body>
 
+<!-- PASSWORD GATE -->
+<div class="gate" id="gate">
+  <div class="gate-title">MASONIC<span>SMOKER</span></div>
+  <div class="gate-sub">LA Hash Co · Affiliate Dashboard</div>
+  <input class="gate-input" type="password" id="gateInput" placeholder="Enter password" onkeydown="if(event.key==='Enter') checkPassword()" />
+  <button class="gate-btn" onclick="checkPassword()">ENTER</button>
+  <div class="gate-error" id="gateError"></div>
+</div>
+
 <!-- TOPBAR -->
 <div class="topbar">
   <div class="topbar-left">
@@ -566,6 +656,27 @@
 
 <script>
   const COMMISSION = 0.10;
+  const PASSWORD = 'Masonic420!';
+
+  // Password gate
+  const gate = document.getElementById('gate');
+  if (sessionStorage.getItem('masonic_auth') === 'true') {
+    gate.style.display = 'none';
+  }
+
+  function checkPassword() {
+    const input = document.getElementById('gateInput');
+    const error = document.getElementById('gateError');
+    if (input.value === PASSWORD) {
+      sessionStorage.setItem('masonic_auth', 'true');
+      gate.style.display = 'none';
+    } else {
+      input.classList.add('error');
+      error.textContent = 'WRONG PASSWORD';
+      setTimeout(() => { input.classList.remove('error'); error.textContent = ''; }, 1500);
+      input.value = '';
+    }
+  }
   const TIER_NAMES = { 139: 'Entry', 249: 'Mid', 399: 'Collector' };
 
   // Set date
