@@ -1,0 +1,546 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Los Angeles Hash Co — Member Preferences</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a08;
+    --deep: #111109;
+    --green: #2d5a1b;
+    --green-bright: #4a9e2a;
+    --green-glow: #6fcf3d;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f0ead6;
+    --muted: #7a7a6a;
+    --border: rgba(201,168,76,0.2);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    padding: 80px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse 70% 60% at 50% 40%, rgba(45,90,27,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .hero-line {
+    width: 1px;
+    height: 60px;
+    background: linear-gradient(to bottom, transparent, var(--gold));
+    margin: 0 auto 32px;
+    animation: lineDown 1s ease forwards;
+  }
+
+  @keyframes lineDown {
+    from { height: 0; opacity: 0; }
+    to   { height: 60px; opacity: 1; }
+  }
+
+  .stamp {
+    display: inline-block;
+    border: 1px solid var(--border);
+    padding: 6px 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 28px;
+    animation: fadeUp 0.8s 0.2s ease both;
+  }
+
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 10vw, 110px);
+    line-height: 0.88;
+    background: linear-gradient(135deg, var(--cream) 0%, var(--gold-light) 50%, var(--cream) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: fadeUp 0.8s 0.4s ease both;
+    margin-bottom: 16px;
+  }
+
+  .hero-sub {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 18px;
+    color: var(--muted);
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.5;
+    animation: fadeUp 0.8s 0.6s ease both;
+  }
+
+  /* ── FORM ── */
+  .form-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 24px 100px;
+  }
+
+  .question-block {
+    margin-bottom: 48px;
+    animation: fadeUp 0.7s ease both;
+  }
+
+  .q-number {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--green-bright);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+  }
+
+  .q-label {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    letter-spacing: 0.04em;
+    color: var(--cream);
+    margin-bottom: 20px;
+    line-height: 1.1;
+  }
+
+  /* chips / multi select */
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 18px;
+    border: 1px solid rgba(255,255,255,0.1);
+    background: var(--deep);
+    color: var(--muted);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .chip:hover {
+    border-color: rgba(111,207,61,0.4);
+    color: var(--cream);
+  }
+
+  .chip.selected {
+    border-color: var(--green-glow);
+    background: rgba(45,90,27,0.3);
+    color: var(--green-glow);
+  }
+
+  .chip.selected::before {
+    content: '✓';
+    font-size: 12px;
+    color: var(--green-glow);
+  }
+
+  /* radio style */
+  .radios {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .radio-opt {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 20px;
+    border: 1px solid rgba(255,255,255,0.08);
+    background: var(--deep);
+    cursor: pointer;
+    transition: all 0.2s;
+    user-select: none;
+  }
+
+  .radio-opt:hover {
+    border-color: rgba(111,207,61,0.3);
+  }
+
+  .radio-opt.selected {
+    border-color: var(--green-glow);
+    background: rgba(45,90,27,0.2);
+  }
+
+  .radio-dot {
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 1px solid rgba(255,255,255,0.2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+  }
+
+  .radio-opt.selected .radio-dot {
+    border-color: var(--green-glow);
+    background: var(--green-glow);
+  }
+
+  .radio-opt.selected .radio-dot::after {
+    content: '';
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--black);
+  }
+
+  .radio-text {
+    font-size: 15px;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+
+  .radio-opt.selected .radio-text {
+    color: var(--cream);
+  }
+
+  /* text input */
+  .text-input {
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    padding: 16px 20px;
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+
+  .text-input::placeholder { color: var(--muted); }
+  .text-input:focus { border-color: rgba(111,207,61,0.4); }
+
+  /* name field */
+  .name-input {
+    width: 100%;
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    font-size: 15px;
+    padding: 16px 20px;
+    outline: none;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+  }
+
+  .name-input::placeholder { color: var(--muted); }
+  .name-input:focus { border-color: rgba(111,207,61,0.4); }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(to right, transparent, var(--border), transparent);
+    margin: 48px 0;
+  }
+
+  /* submit */
+  .submit-btn {
+    width: 100%;
+    background: var(--green-glow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 0.15em;
+    padding: 20px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .submit-btn:hover {
+    background: var(--gold-light);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(111,207,61,0.2);
+  }
+
+  .submit-note {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    text-align: center;
+    margin-top: 16px;
+  }
+
+  /* success */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 100px 24px;
+  }
+
+  .success-screen.show { display: block; }
+
+  .success-icon {
+    font-size: 60px;
+    margin-bottom: 24px;
+    animation: pop 0.5s ease;
+  }
+
+  @keyframes pop {
+    0%   { transform: scale(0); }
+    70%  { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+
+  .success-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 64px;
+    color: var(--green-glow);
+    line-height: 0.9;
+    margin-bottom: 16px;
+  }
+
+  .success-sub {
+    font-family: 'DM Serif Display', serif;
+    font-style: italic;
+    font-size: 20px;
+    color: var(--muted);
+    max-width: 400px;
+    margin: 0 auto;
+    line-height: 1.5;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .fade-in {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .fade-in.visible { opacity: 1; transform: none; }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-line"></div>
+  <div class="stamp">Los Angeles Hash Co · Rosin Club</div>
+  <h1 class="hero-title">BUILD YOUR<br>BOX</h1>
+  <p class="hero-sub">Tell us what you're into. We'll dial in your monthly box to match.</p>
+</div>
+
+<div class="divider" style="margin: 0 0 48px;"></div>
+
+<!-- FORM -->
+<!-- Netlify Forms hidden form for detection -->
+<form name="member-preferences" netlify netlify-honeypot="bot-field" hidden>
+  <input type="text" name="name" />
+  <input type="email" name="email" />
+  <input type="text" name="format" />
+  <input type="text" name="terpenes" />
+  <input type="text" name="vibe" />
+  <textarea name="notes"></textarea>
+</form>
+
+<div class="form-wrap" id="formWrap">
+
+  <!-- Q0: Name -->
+  <div class="question-block fade-in" style="animation-delay:0.1s">
+    <div class="q-number">Your Info</div>
+    <div class="q-label">What's Your Name?</div>
+    <input class="name-input" type="text" id="memberName" placeholder="First name" />
+    <input class="name-input" type="email" id="memberEmail" placeholder="Email address" />
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Q1: Format -->
+  <div class="question-block fade-in" style="animation-delay:0.2s">
+    <div class="q-number">Question 01</div>
+    <div class="q-label">What Format Do You Prefer?</div>
+    <div class="radios" id="q1">
+      <div class="radio-opt" data-q="q1" data-val="rosin">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> Rosin — classic, full-spectrum, straight from the press</span>
+      </div>
+      <div class="radio-opt" data-q="q1" data-val="pen">
+        <div class="radio-dot"></div>
+        <span class="radio-text">️ Rosin Pen / Cart — 1g, ready to go, no rig needed</span>
+      </div>
+      <div class="radio-opt" data-q="q1" data-val="both">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> Mix it up — surprise me with both</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Q2: Terps -->
+  <div class="question-block fade-in" style="animation-delay:0.3s">
+    <div class="q-number">Question 02</div>
+    <div class="q-label">What Terpene Profiles Do You Love?</div>
+    <div class="chips" id="q2">
+      <div class="chip" data-q="q2" data-val="gas">⛽ Gas / Fuel</div>
+      <div class="chip" data-q="q2" data-val="citrus"> Citrus</div>
+      <div class="chip" data-q="q2" data-val="sweet"> Sweet / Fruity</div>
+      <div class="chip" data-q="q2" data-val="earthy"> Earthy / Woody</div>
+      <div class="chip" data-q="q2" data-val="floral"> Floral / Herbal</div>
+      <div class="chip" data-q="q2" data-val="anything"> Anything — I trust you</div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Q3: Vibe -->
+  <div class="question-block fade-in" style="animation-delay:0.4s">
+    <div class="q-number">Question 03</div>
+    <div class="q-label">What's Your Preferred Vibe?</div>
+    <div class="radios" id="q3">
+      <div class="radio-opt" data-q="q3" data-val="energetic">
+        <div class="radio-dot"></div>
+        <span class="radio-text">⚡ Energetic & Creative — sativa-leaning, daytime</span>
+      </div>
+      <div class="radio-opt" data-q="q3" data-val="balanced">
+        <div class="radio-dot"></div>
+        <span class="radio-text">⚖️ Balanced — hybrid, anytime</span>
+      </div>
+      <div class="radio-opt" data-q="q3" data-val="relaxed">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> Relaxed & Heavy — indica-leaning, night time</span>
+      </div>
+      <div class="radio-opt" data-q="q3" data-val="anything">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> No preference — send the heat</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Q4: Anything else -->
+  <div class="question-block fade-in" style="animation-delay:0.5s">
+    <div class="q-number">Question 04</div>
+    <div class="q-label">Anything We Should Know?</div>
+    <textarea class="text-input" id="q4" rows="4" placeholder="Strains you love, strains you hate, anything specific you want in your box..."></textarea>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- SUBMIT -->
+  <div class="question-block fade-in" style="animation-delay:0.6s">
+    <button class="submit-btn" onclick="handleSubmit()">LOCK IN MY PREFERENCES</button>
+    <p class="submit-note">We'll use this to build your March 9 box. You can update anytime.</p>
+  </div>
+
+</div>
+
+<!-- SUCCESS -->
+<div class="success-screen" id="successScreen">
+  <div class="success-icon"></div>
+  <div class="success-title">YOU'RE<br>ALL SET</div>
+  <p class="success-sub">Your preferences are locked in. We'll build your March 9 box around what you told us.</p>
+  <p style="font-family:'DM Mono',monospace; font-size:11px; color:var(--muted); margin-top:32px; letter-spacing:0.1em;">LOS ANGELES HASH CO · ROSIN CLUB</p>
+</div>
+
+<script>
+  // Chip multi-select
+  document.querySelectorAll('.chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      chip.classList.toggle('selected');
+    });
+  });
+
+  // Radio single-select
+  document.querySelectorAll('.radio-opt').forEach(opt => {
+    opt.addEventListener('click', () => {
+      const q = opt.dataset.q;
+      document.querySelectorAll(`.radio-opt[data-q="${q}"]`).forEach(o => o.classList.remove('selected'));
+      opt.classList.add('selected');
+    });
+  });
+
+  // Scroll fade-in
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); }
+    });
+  }, { threshold: 0.1 });
+  document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+  function handleSubmit() {
+    const name   = document.getElementById('memberName').value.trim();
+    const email  = document.getElementById('memberEmail').value.trim();
+    const format = document.querySelector('.radio-opt[data-q="q1"].selected')?.dataset.val;
+    const terps  = [...document.querySelectorAll('.chip[data-q="q2"].selected')].map(c => c.dataset.val).join(', ');
+    const vibe   = document.querySelector('.radio-opt[data-q="q3"].selected')?.dataset.val;
+    const notes  = document.getElementById('q4').value.trim();
+
+    if (!name)   { alert('Please enter your name.'); return; }
+    if (!format) { alert('Please pick a format preference.'); return; }
+    if (!vibe)   { alert('Please pick a vibe preference.'); return; }
+
+    const formData = new FormData();
+    formData.append('form-name', 'member-preferences');
+    formData.append('name', name);
+    formData.append('email', email);
+    formData.append('format', format);
+    formData.append('terpenes', terps || 'none selected');
+    formData.append('vibe', vibe);
+    formData.append('notes', notes);
+
+    fetch('/', { method: 'POST', body: formData })
+      .then(() => {
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('successScreen').classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      })
+      .catch(() => {
+        // Still show success even if fetch fails (offline, etc.)
+        document.getElementById('formWrap').style.display = 'none';
+        document.getElementById('successScreen').classList.add('show');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+  }
+</script>
+</body>
+</html>
