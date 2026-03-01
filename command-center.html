@@ -1,0 +1,623 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LA Hash Co — Command Center</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a08;
+    --deep: #111109;
+    --green: #2d5a1b;
+    --green-bright: #4a9e2a;
+    --green-glow: #6fcf3d;
+    --gold: #c9a84c;
+    --gold-light: #e8c97a;
+    --cream: #f0ead6;
+    --muted: #7a7a6a;
+    --border: rgba(201,168,76,0.2);
+    --red: #c62828;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--black);
+    color: var(--cream);
+    font-family: 'Instrument Sans', sans-serif;
+    min-height: 100vh;
+  }
+
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.4;
+  }
+
+  /* ── GATE ── */
+  .gate {
+    position: fixed; inset: 0;
+    background: var(--black);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+    text-align: center;
+    padding: 24px;
+  }
+
+  .gate-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 52px;
+    line-height: 0.9;
+    color: var(--cream);
+    margin-bottom: 8px;
+  }
+
+  .gate-title span { color: var(--green-glow); }
+
+  .gate-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 36px;
+    text-transform: uppercase;
+  }
+
+  .gate-input {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.08);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    letter-spacing: 0.15em;
+    padding: 14px 24px;
+    outline: none;
+    text-align: center;
+    width: 280px;
+    transition: border-color 0.2s;
+    margin-bottom: 12px;
+    display: block;
+  }
+
+  .gate-input:focus { border-color: rgba(111,207,61,0.4); }
+  .gate-input.error { border-color: var(--red); animation: shake 0.3s ease; }
+
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-8px); }
+    75% { transform: translateX(8px); }
+  }
+
+  .gate-btn {
+    background: var(--green-glow);
+    color: var(--black);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.15em;
+    padding: 14px 48px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 280px;
+  }
+
+  .gate-btn:hover { background: var(--gold-light); }
+  .gate-error { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--red); letter-spacing: 0.1em; margin-top: 10px; height: 16px; }
+
+  /* ── HEADER ── */
+  .header {
+    background: var(--deep);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 32px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  .header-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+  }
+
+  .header-title span { color: var(--green-glow); }
+
+  .header-date {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+  }
+
+  /* ── MAIN ── */
+  .main {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── STATS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 700px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
+
+  .stat-card {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 28px 24px;
+    text-align: center;
+  }
+
+  .stat-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 10px;
+  }
+
+  .stat-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 44px;
+    line-height: 1;
+    color: var(--cream);
+  }
+
+  .stat-value.green { color: var(--green-glow); }
+  .stat-value.gold  { color: var(--gold-light); }
+
+  .stat-sub {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    margin-top: 6px;
+    letter-spacing: 0.08em;
+  }
+
+  /* ── SECTION ── */
+  .section-hdr {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    margin-top: 40px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.1em;
+    color: var(--cream);
+  }
+
+  .section-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.15em;
+    color: var(--green-bright);
+    text-transform: uppercase;
+  }
+
+  /* ── LINK GRID ── */
+  .link-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  @media (max-width: 800px) { .link-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 500px) { .link-grid { grid-template-columns: 1fr; } }
+
+  .link-card {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 24px 28px;
+    text-decoration: none;
+    transition: border-color 0.2s, transform 0.2s;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    cursor: pointer;
+  }
+
+  .link-card:hover {
+    border-color: rgba(111,207,61,0.3);
+    transform: translateY(-2px);
+  }
+
+  .link-card.gold-border:hover { border-color: rgba(201,168,76,0.4); }
+  .link-card.red-border:hover  { border-color: rgba(198,40,40,0.4); }
+
+  .link-icon { font-size: 28px; flex-shrink: 0; margin-top: 2px; }
+
+  .link-info { flex: 1; }
+
+  .link-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    letter-spacing: 0.05em;
+    color: var(--cream);
+    margin-bottom: 4px;
+  }
+
+  .link-desc {
+    font-size: 12px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 8px;
+  }
+
+  .link-url {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--green-glow);
+    letter-spacing: 0.05em;
+  }
+
+  .link-arrow {
+    font-size: 18px;
+    color: var(--muted);
+    margin-top: 4px;
+    flex-shrink: 0;
+    transition: color 0.2s, transform 0.2s;
+  }
+
+  .link-card:hover .link-arrow { color: var(--green-glow); transform: translateX(4px); }
+  .link-card.gold-border:hover .link-arrow { color: var(--gold); }
+
+  /* copy btn */
+  .copy-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .copy-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--muted);
+    letter-spacing: 0.05em;
+    background: var(--black);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 3px 10px;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .copy-chip:hover { border-color: rgba(201,168,76,0.3); color: var(--gold); }
+  .copy-chip.copied { color: var(--green-glow); border-color: rgba(111,207,61,0.3); }
+
+  /* ── QUICK ACTIONS ── */
+  .actions-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px;
+  }
+
+  @media (max-width: 600px) { .actions-grid { grid-template-columns: 1fr; } }
+
+  .action-card {
+    background: var(--deep);
+    border: 1px solid rgba(255,255,255,0.06);
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+
+  .action-icon { font-size: 22px; flex-shrink: 0; }
+
+  .action-info { flex: 1; }
+
+  .action-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cream);
+    margin-bottom: 2px;
+  }
+
+  .action-desc { font-size: 12px; color: var(--muted); }
+
+  .action-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--cream);
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    padding: 6px 14px;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+    text-decoration: none;
+    display: inline-block;
+  }
+
+  .action-btn:hover { border-color: var(--green-glow); color: var(--green-glow); }
+  .action-btn.gold:hover { border-color: var(--gold); color: var(--gold); }
+</style>
+</head>
+<body>
+
+<!-- GATE -->
+<div class="gate" id="gate">
+  <div class="gate-title">LA HASH<br><span>CO</span></div>
+  <div class="gate-sub">Command Center · Private Access</div>
+  <input class="gate-input" type="password" id="gateInput" placeholder="Password" onkeydown="if(event.key==='Enter') checkPassword()" />
+  <button class="gate-btn" onclick="checkPassword()">ENTER</button>
+  <div class="gate-error" id="gateError"></div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-left">
+    <div class="header-title">LA HASH CO · <span>COMMAND CENTER</span></div>
+  </div>
+  <div class="header-date" id="headerDate"></div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- STATS -->
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-label">Founding Members</div>
+      <div class="stat-value green">20/20</div>
+      <div class="stat-sub">Class closed </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">MRR</div>
+      <div class="stat-value gold">$4,034</div>
+      <div class="stat-sub">$48,408 annual</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">First Box</div>
+      <div class="stat-value">MAR 9</div>
+      <div class="stat-sub">2026</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-label">Affiliate</div>
+      <div class="stat-value green">10%</div>
+      <div class="stat-sub">MasonicSmoker active</div>
+    </div>
+  </div>
+
+  <!-- PUBLIC PAGES -->
+  <div class="section-hdr">
+    <div class="section-title">PUBLIC PAGES</div>
+    <div class="section-label">Live on club.losangeleshash.co</div>
+  </div>
+  <div class="link-grid">
+
+    <a class="link-card" href="/founders" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Founders Page</div>
+        <div class="link-desc">20/20 founding class. All agents locked in.</div>
+        <div class="link-url">club.losangeleshash.co/founders</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/founders')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card" href="/subscribe" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Subscribe Page</div>
+        <div class="link-desc">Public membership page at standard rates.</div>
+        <div class="link-url">club.losangeleshash.co/subscribe</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/subscribe')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card" href="/preferences" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Preferences Form</div>
+        <div class="link-desc">Member questionnaire. Send to all 20 founders.</div>
+        <div class="link-url">club.losangeleshash.co/preferences</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/preferences')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card" href="/shop" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Shop</div>
+        <div class="link-desc">Members-only product page. Rosin, pens, bulk.</div>
+        <div class="link-url">club.losangeleshash.co/shop</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/shop')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card gold-border" href="/masonicsmoker" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">MasonicSmoker</div>
+        <div class="link-desc">Affiliate landing page for his Instagram audience.</div>
+        <div class="link-url">club.losangeleshash.co/masonicsmoker</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/masonicsmoker')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card gold-border" href="/masonic-dashboard" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Masonic Dashboard</div>
+        <div class="link-desc">Private affiliate tracker. Password protected.</div>
+        <div class="link-url">club.losangeleshash.co/masonic-dashboard</div>
+        <div class="copy-row">
+          <span class="copy-chip" onclick="copyUrl(event, 'https://club.losangeleshash.co/masonic-dashboard')">Copy Link</span>
+        </div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- EXTERNAL LINKS -->
+  <div class="section-hdr">
+    <div class="section-title">EXTERNAL</div>
+    <div class="section-label">Outside Links</div>
+  </div>
+  <div class="link-grid">
+
+    <a class="link-card" href="https://www.lahash.co/lahashclub" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Wix Checkout</div>
+        <div class="link-desc">Main subscription checkout page on Wix.</div>
+        <div class="link-url">lahash.co/lahashclub</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card" href="https://app.netlify.com" target="_blank">
+      <span class="link-icon">⚡</span>
+      <div class="link-info">
+        <div class="link-name">Netlify Dashboard</div>
+        <div class="link-desc">Deploy new pages, view form submissions.</div>
+        <div class="link-url">app.netlify.com</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+    <a class="link-card" href="https://manage.wix.com" target="_blank">
+      <span class="link-icon"></span>
+      <div class="link-info">
+        <div class="link-name">Wix Dashboard</div>
+        <div class="link-desc">Manage orders, products, and your main site.</div>
+        <div class="link-url">manage.wix.com</div>
+      </div>
+      <span class="link-arrow">→</span>
+    </a>
+
+  </div>
+
+  <!-- QUICK ACTIONS -->
+  <div class="section-hdr">
+    <div class="section-title">QUICK ACTIONS</div>
+    <div class="section-label">Shortcuts</div>
+  </div>
+  <div class="actions-grid">
+
+    <div class="action-card">
+      <span class="action-icon"></span>
+      <div class="action-info">
+        <div class="action-title">Send Preferences Form</div>
+        <div class="action-desc">Text this link to all 20 founding members</div>
+      </div>
+      <span class="copy-chip" onclick="copyText(event, 'https://club.losangeleshash.co/preferences')" style="margin-left:auto;">Copy Link</span>
+    </div>
+
+    <div class="action-card">
+      <span class="action-icon"></span>
+      <div class="action-info">
+        <div class="action-title">Masonic's Referral Link</div>
+        <div class="action-desc">Share with MasonicSmoker for his posts</div>
+      </div>
+      <span class="copy-chip" onclick="copyText(event, 'https://club.losangeleshash.co/lahashclub?ref=masonicsmoker')" style="margin-left:auto;">Copy Link</span>
+    </div>
+
+    <div class="action-card">
+      <span class="action-icon"></span>
+      <div class="action-info">
+        <div class="action-title">Cash App</div>
+        <div class="action-desc">$lahashco2</div>
+      </div>
+      <span class="copy-chip" onclick="copyText(event, '$lahashco2')" style="margin-left:auto;">Copy</span>
+    </div>
+
+    <div class="action-card">
+      <span class="action-icon"></span>
+      <div class="action-info">
+        <div class="action-title">Zelle</div>
+        <div class="action-desc">323-835-9722 · Lahashco</div>
+      </div>
+      <span class="copy-chip" onclick="copyText(event, '3238359722')" style="margin-left:auto;">Copy</span>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  const PASSWORD = 'Lahash2026!';
+
+  document.getElementById('headerDate').textContent =
+    new Date().toLocaleDateString('en-US', { weekday:'long', year:'numeric', month:'long', day:'numeric' }).toUpperCase();
+
+  const gate = document.getElementById('gate');
+  if (sessionStorage.getItem('lahash_admin') === 'true') gate.style.display = 'none';
+
+  function checkPassword() {
+    const input = document.getElementById('gateInput');
+    const error = document.getElementById('gateError');
+    if (input.value === PASSWORD) {
+      sessionStorage.setItem('lahash_admin', 'true');
+      gate.style.display = 'none';
+    } else {
+      input.classList.add('error');
+      error.textContent = 'WRONG PASSWORD';
+      setTimeout(() => { input.classList.remove('error'); error.textContent = ''; }, 1500);
+      input.value = '';
+    }
+  }
+
+  function copyUrl(e, url) {
+    e.preventDefault(); e.stopPropagation();
+    navigator.clipboard.writeText(url);
+    const btn = e.target;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = 'Copy Link'; btn.classList.remove('copied'); }, 2000);
+  }
+
+  function copyText(e, text) {
+    e.stopPropagation();
+    navigator.clipboard.writeText(text);
+    const btn = e.target;
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = orig; btn.classList.remove('copied'); }, 2000);
+  }
+</script>
+</body>
+</html>
