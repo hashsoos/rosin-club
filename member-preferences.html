@@ -378,6 +378,8 @@
   <input type="text" name="format" />
   <input type="text" name="terpenes" />
   <input type="text" name="vibe" />
+  <input type="text" name="flower-sampler" />
+  <input type="text" name="strain-count" />
   <textarea name="notes"></textarea>
 </form>
 
@@ -457,6 +459,46 @@
 
   <div class="divider"></div>
 
+  <!-- Q5: Flower Swap -->
+  <div class="question-block fade-in" style="animation-delay:0.55s">
+    <div class="q-number">Question 05</div>
+    <div class="q-label">Want to Add Indoor Flower?</div>
+    <div class="radios" id="q5">
+      <div class="radio-opt" data-q="q5" data-val="yes">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> Yes — add a 3-eighth high quality indoor flower sampler to my box</span>
+      </div>
+      <div class="radio-opt" data-q="q5" data-val="no">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> No — keep it all rosin</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <!-- Q6: Strain Count -->
+  <div class="question-block fade-in" style="animation-delay:0.6s">
+    <div class="q-number">Question 06</div>
+    <div class="q-label">How Many Strains in Your Box?</div>
+    <div class="radios" id="q6">
+      <div class="radio-opt" data-q="q6" data-val="one">
+        <div class="radio-dot"></div>
+        <span class="radio-text">1️⃣ One strain — keep it focused</span>
+      </div>
+      <div class="radio-opt" data-q="q6" data-val="two">
+        <div class="radio-dot"></div>
+        <span class="radio-text">2️⃣ Two strains — some variety</span>
+      </div>
+      <div class="radio-opt" data-q="q6" data-val="surprise">
+        <div class="radio-dot"></div>
+        <span class="radio-text"> Surprise me — curator's choice</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
   <!-- Q4: Anything else -->
   <div class="question-block fade-in" style="animation-delay:0.5s">
     <div class="q-number">Question 04</div>
@@ -515,6 +557,9 @@
     const vibe   = document.querySelector('.radio-opt[data-q="q3"].selected')?.dataset.val;
     const notes  = document.getElementById('q4').value.trim();
 
+    const flower  = document.querySelector('.radio-opt[data-q="q5"].selected')?.dataset.val;
+    const strains = document.querySelector('.radio-opt[data-q="q6"].selected')?.dataset.val;
+
     if (!name)   { alert('Please enter your name.'); return; }
     if (!format) { alert('Please pick a format preference.'); return; }
     if (!vibe)   { alert('Please pick a vibe preference.'); return; }
@@ -526,6 +571,8 @@
     formData.append('format', format);
     formData.append('terpenes', terps || 'none selected');
     formData.append('vibe', vibe);
+    formData.append('flower-sampler', flower || 'no answer');
+    formData.append('strain-count', strains || 'no answer');
     formData.append('notes', notes);
 
     fetch('/', { method: 'POST', body: formData })
