@@ -4,5 +4,7 @@
 /masonic-dashboard/ /masonic-dashboard.html 200
 /member-preferences /member-preferences.html 200
 /member-preferences/ /member-preferences.html 200
+/preferences /member-preferences.html 200
+/preferences/ /member-preferences.html 200
 /command-center /command-center.html 200
 /command-center/ /command-center.html 200
